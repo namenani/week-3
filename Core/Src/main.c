@@ -54,6 +54,7 @@ typedef struct {
 
 ADCStructure ADCChannel[3] = { 0 };
 float ADCSOutputConverted = 0;
+int ADCMode = 0;
 
 /* USER CODE END PV */
 
@@ -278,6 +279,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -301,11 +308,29 @@ void ADCPollingMethodUpdate() {
 	for (int i = 0; i < 3; i++) {
 		HAL_ADC_ConfigChannel(&hadc1, &ADCChannel[i].Config);
 		HAL_ADC_Start(&hadc1);
-		if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK)
-			{
+		if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
 			ADCChannel[i].data = HAL_ADC_GetValue(&hadc1);
-			ADCSOutputConverted = (((3.3*ADCChannel[i].data)/4096)*(1/(10^3)));
+
+			if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1) == GPIO_PIN_SET) {
+				if(ADCMode == 0)
+				{
+					ADCMode = 1;
+				}
+				else
+				{
+					ADCMode = 0
+				}
 			}
+			if(ADCMode = 1){
+				ADCSOutputConverted = (((3.3 * ADCChannel[i].data) / 4096)* (1 / (10 ^ 3)));
+			}
+			else
+			{
+
+			}
+
+
+		}
 		// ADCChannel[i].data = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
 	}
