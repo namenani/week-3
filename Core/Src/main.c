@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * All rights reserved.</center></h2>
+ *
+ * This software component is licensed by ST under BSD 3-Clause license,
+ * the "License"; You may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at:
+ *                        opensource.org/licenses/BSD-3-Clause
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -43,6 +43,14 @@
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint16_t adcdata[2] = { 0 };
+
+typedef struct {
+	ADC_ChannelConfTypeDef Config;
+	uint16_t data;
+} ADCStructure;
+
+ADCStructure ADCChannel[3] = { 0 };
 
 /* USER CODE END PV */
 
@@ -51,7 +59,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void ADCPollingMethodInit();
+void ADCPollingMethodUpdate();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -89,17 +98,20 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+	ADCPollingMethodInit();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	while (1) {
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
+		ADCPollingMethodUpdate();
+	}
   /* USER CODE END 3 */
 }
 
@@ -214,7 +226,31 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void ADCPollingMethodInit() {
+	//config all ADC Channel
+	ADCChannel[0].Config.Channel = ADC_CHANNEL_0;
+	ADCChannel[0].Config.Rank = 1;
+	ADCChannel[0].Config.SamplingTime = ADC_SAMPLETIME_3CYCLES;
 
+	ADCChannel[1].Config.Channel = ADC_CHANNEL_1;
+	ADCChannel[1].Config.Rank = 1;
+	ADCChannel[1].Config.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+
+	ADCChannel[2].Config.Channel = ADC_CHANNEL_TEMPSENSOR;
+	ADCChannel[2].Config.Rank = 1;
+	ADCChannel[2].Config.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+}
+//Polling Method
+void ADCPollingMethodUpdate() {
+	//Read all 3 Channel
+	for (int i = 0; i < 3; i++) {
+		HAL_ADC_ConfigChannel(&hadc1, &ADCChannel[i].Config);
+		HAL_ADC_Start(&hadc1);
+		HAL_ADC_PollForConversion(&hadc1, 10);
+		ADCChannel[i].data = HAL_ADC_GetValue(&hadc1);
+		HAL_ADC_Stop(&hadc1);
+	}
+}
 /* USER CODE END 4 */
 
 /**
@@ -224,11 +260,10 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	/* User can add his own implementation to report the HAL error return state */
+	__disable_irq();
+	while (1) {
+	}
   /* USER CODE END Error_Handler_Debug */
 }
 
