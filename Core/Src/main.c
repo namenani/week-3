@@ -325,7 +325,7 @@ void ADCPollingMethodUpdate() {
 		ADCSOutputConverted =
 				(((3.3 * ADCChannel[0].data) / 4096 / (1000)));
 	} else {
-		ADCSOutputConverted = (((ADCChannel[2].data / 4096) * 3.3) - 0.76)
+		ADCSOutputConverted = (((ADCChannel[2].data * 3.3) / 4096) - 0.76)
 				/ 0.0025 + 25;
 	}
 }
