@@ -306,7 +306,6 @@ void ADCPollingMethodUpdate() {
 		// ADCChannel[i].data = HAL_ADC_GetValue(&hadc1);
 		HAL_ADC_Stop(&hadc1);
 	}
-
 	if (HAL_GetTick() - ButtonTimeStamp >= 100) //ms
 			{
 
@@ -319,17 +318,16 @@ void ADCPollingMethodUpdate() {
 			} else {
 				ADCMode = 0;
 			}
-			SwitchState[1] = SwitchState[0];
 		}
 	}
-	if (ADCMode = 1) {
-		ADCSOutputConverted = (((3.3 * ADCChannel[0].data) / 4096)
-				* (1 / (1000)));
+	SwitchState[1] = SwitchState[0];
+	if (ADCMode == 0) {
+		ADCSOutputConverted =
+				(((3.3 * ADCChannel[0].data) / 4096 / (1000)));
 	} else {
-		ADCSOutputConverted = (((ADCChannel[2].data / 4096 * 3.3) - 0.76)
-				/ 0.0025) + 25.0;
+		ADCSOutputConverted = (((ADCChannel[2].data / 4096) * 3.3) - 0.76)
+				/ 0.0025 + 25;
 	}
-
 }
 /* USER CODE END 4 */
 
