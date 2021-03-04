@@ -53,6 +53,7 @@ typedef struct {
 } ADCStructure;
 
 ADCStructure ADCChannel[3] = { 0 };
+
 float ADCSOutputConverted = 0;
 int ADCMode = 0;
 uint32_t ButtonTimeStamp = 0;
@@ -66,8 +67,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
-void ADCPollingMethodInit();
-void ADCPollingMethodUpdate();
+void ADCPollingMethodInit();//
+void ADCPollingMethodUpdate(); // Read ADC
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
